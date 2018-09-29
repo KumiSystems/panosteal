@@ -11,6 +11,24 @@ def tiles_to_equirectangular_blender(back, right, front, left, top, bottom,
         tmp=None, height=1920, width=3840, keep=False):
 
     '''
+    Use Blender to convert the images into an equirectangular format. This
+    requires both Blender and cube2sphere to be installed and in $PATH.
+
+    Will create a temporary directory to store files in if no working directory
+    is passed (tmp). The function will return a PIL.Image object containing the
+    final equirectangular image.
+
+    :param back: PIL.Image containing the "back" part of the cube map
+    :param right: PIL.Image containing the "right" part of the cube map
+    :param front: PIL.Image containing the "front" part of the cube map
+    :param left: PIL.Image containting the "left" part of the cube map
+    :param top: PIL.Image containing the "top" part of the cube map
+    :param bottom: PIL.Image containing the "bottom" part of the cube map
+    :param tmp: Temporary directory to use. Will create one if None is passed
+    :param height: Target height of the output image
+    :param width: Target width of the output image
+    :param keep: Will not clean up temporary directory if True
+    :return: PIL.Image object containing the equirectangular image
     '''
 
     tmpdir = tempfile.TemporaryDirectory()
@@ -70,6 +88,20 @@ def tiles_to_equirectangular_blender(back, right, front, left, top, bottom,
 
 def tiles_to_equirectangular(back, right, front, left, top, bottom):
     '''
+    Use Blender to convert the images into an equirectangular format. This does
+    not require Blender to be installed, instead using a custom algorithm. This
+    is not tested thoroughly and will probably not work at this point.
+
+    The function will return a PIL.Image object containing the final 
+    equirectangular image.
+
+    :param back: PIL.Image containing the "back" part of the cube map
+    :param right: PIL.Image containing the "right" part of the cube map
+    :param front: PIL.Image containing the "front" part of the cube map
+    :param left: PIL.Image containting the "left" part of the cube map
+    :param top: PIL.Image containing the "top" part of the cube map
+    :param bottom: PIL.Image containing the "bottom" part of the cube map
+    :return: PIL.Image object containing the equirectangular image
     '''
 
     dim = left.size[0]
