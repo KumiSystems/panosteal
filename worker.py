@@ -3,8 +3,36 @@ import urllib.request
 import io
 import math
 import subprocess
+import tempfile
+import pathlib
+import os
 
-def tiles_to_equirectangular_blender(back, right, front, left, top, bottom):
+def tiles_to_equirectangular_blender(back, right, front, left, top, bottom,
+        tmp=None, height=1920, width=3840, keep=False):
+
+    '''
+    '''
+
+    tmpdir = tempfile.TemporaryDirectory()
+    
+    if tmp and not keep:
+        tmpdir.name = tmp
+    if not tmp:
+        tmp = tmpdir.name
+
+    try:
+        pathlib.Path(tmp).mkdir(parents=True, exist_ok=True)
+    except:
+        print("Failed to create temporary directory.")
+        raise
+
+    if not height and not width:
+        height = height or left.size[0] * 2
+        width = width or left.size[0] * 4
+
+    pre = os.getcwd()
+    os.chdir(tmp)
+
     left.save("left.png")
     front.save("front.png")
     right.save("right.png")
@@ -12,22 +40,38 @@ def tiles_to_equirectangular_blender(back, right, front, left, top, bottom):
     bottom.save("bottom.png")
     top.save("top.png")
 
-    height = left.size[0] * 2
-    width = left.size[0] * 4
-
     try:
         process = subprocess.Popen(
-            ['cube2sphere', 'front.png', 'back.png', 'right.png', 'left.png',
-             'top.png', 'bottom.png', '-f', 'png', "-r", 
-             str(width), str(height)]
+            ['cube2sphere',
+                'front.png', 
+                'back.png', 
+                'right.png', 
+                'left.png',
+                'top.png', 
+                'bottom.png', 
+                '-o', 'out',
+                '-f', 'png',
+                "-r", str(width), str(height)]
             )
 
         process.wait()
 
+        os.chdir(pre)
+
+        if not keep:
+            tmpdir.cleanup()
+
+        return PIL.Image.open("%s/out0001.png" % tmp)
+
     except:
-        print("No imports here.")
+        os.chdir(pre)
+        print("Something went wrong trying to convert to equirectangular.")
+        raise
 
 def tiles_to_equirectangular(back, right, front, left, top, bottom):
+    '''
+    '''
+
     dim = left.size[0]
 
     raw = []
@@ -217,10 +261,20 @@ def krpano_stitch(tiles):
 
     return output
 
-def krpano_to_equirectangular(url):
+def krpano_to_equirectangular(url, blender=True):
+    '''
+    Takes the URL of any image in a krpano panorama and returns a finished
+    stitched image.
+
+    :param url: Image URL
+    :return: PIL.Image object containing the final image
+    '''
+
     images = krpano_process(url)
     stitched = krpano_stitch(images)
-    return tiles_to_equirectangular_blender(*stitched)
+    function = tiles_to_equirectangular_blender if blender \
+            else tiles_to_equirectangular
+    return function(*stitched)
 
 def stitch(images):
     '''
