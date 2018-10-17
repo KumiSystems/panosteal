@@ -336,7 +336,7 @@ def krpano_make_tiles(url):
         raise ValueError("%s does not seem to be a valid krpano URL." % url)
 
 
-def krpano_to_equirectangular(url, blender=True):
+def krpano_to_equirectangular(url, rotation=[0,0,0], resolution=[0,0]):
     '''
     Takes the URL of any image in a krpano panorama and returns a finished
     stitched image.
@@ -346,9 +346,11 @@ def krpano_to_equirectangular(url, blender=True):
     '''
 
     stitched = krpano_make_tiles(url)
-    function = tiles_to_equirectangular_blender if blender \
-            else tiles_to_equirectangular
-    return function(*stitched)
+    function = tiles_to_equirectangular_blender
+
+    rx, ry, rz = rotation
+    width, height = resolution
+    return function(*stitched, rx=rx, ry=ry, rz=rz, width=width, height=height)
 
 process_url = krpano_to_equirectangular
 

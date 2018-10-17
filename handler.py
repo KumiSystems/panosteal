@@ -2,6 +2,7 @@
 
 import re
 import importlib
+import argparse
 
 regs = {
         "\d/\d/\d_\d\.jpg": "krpanosteal",
@@ -25,7 +26,16 @@ def parse_url(url):
     return importlib.import_module(selected).process_url
 
 if __name__ == "__main__":
-    url = input("Please input the URL of an image. ")
-    handler = parse_url(url)
-    image = handler(url)
-    image.save("out.png")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('url', help='URL to process')
+    parser.add_argument('--title', help='title to be used for the file name')
+    parser.add_argument("--rotation", nargs=3, type=int, help="rotation on x/y/z axes", metavar=("x","y","z"))
+    parser.add_argument("--resolution", type=int, nargs=2, metavar=("w","h"))
+    parser.add_argument("--output")
+
+    args = parser.parse_args()
+
+    handler = parse_url(args.url)
+    image = handler(args.url, args.rotation or [0,0,0], args.resolution or [3840, 1920])
+
+    image.save(args.output + "/" + args.title + ".png")
