@@ -8,7 +8,7 @@ import pathlib
 import os
 
 def tiles_to_equirectangular_blender(back, right, front, left, top, bottom,
-        tmp=None, height=1920, width=3840, keep=False):
+        rx=0, ry=0, rz=0, tmp=None, height=1920, width=3840, keep=False):
 
     '''
     Use Blender to convert the images into an equirectangular format. This
@@ -24,6 +24,9 @@ def tiles_to_equirectangular_blender(back, right, front, left, top, bottom,
     :param left: PIL.Image containting the "left" part of the cube map
     :param top: PIL.Image containing the "top" part of the cube map
     :param bottom: PIL.Image containing the "bottom" part of the cube map
+    :param rx: Rotation in degrees (integer) to apply on the x axis
+    :param ry: Rotation in degrees (integer) to apply on the y axis
+    :param rz: Rotation in degrees (integer) to apply on the z axis
     :param tmp: Temporary directory to use. Will create one if None is passed
     :param height: Target height of the output image
     :param width: Target width of the output image
@@ -38,15 +41,22 @@ def tiles_to_equirectangular_blender(back, right, front, left, top, bottom,
     if not tmp:
         tmp = tmpdir.name
 
+    '''Blender needs actual files rather than PIL objects, so create a folder
+    for those.'''
+
     try:
         pathlib.Path(tmp).mkdir(parents=True, exist_ok=True)
     except:
         print("Failed to create temporary directory.")
         raise
 
+    '''If no resolution is passed, assume the original resolution for output.'''
+
     if not height and not width:
         height = height or left.size[0] * 2
         width = width or left.size[0] * 4
+
+    '''Move to temporary directory and create files for Blender to work with.'''
 
     pre = os.getcwd()
     os.chdir(tmp)
@@ -66,7 +76,8 @@ def tiles_to_equirectangular_blender(back, right, front, left, top, bottom,
                 'right.png', 
                 'left.png',
                 'top.png', 
-                'bottom.png', 
+                'bottom.png',
+                '-R', str(rx), str(ry), str(rz), # rotation on x/y/z axes
                 '-o', 'out',
                 '-f', 'png',
                 "-r", str(width), str(height)]
@@ -74,12 +85,15 @@ def tiles_to_equirectangular_blender(back, right, front, left, top, bottom,
 
         process.wait()
 
-        os.chdir(pre)
+        outimg = PIL.Image.open("%s/out0001.png" % tmp) # Read new image to PIL
+
+        os.chdir(pre) # Move back to previous working directory
 
         if not keep:
-            tmpdir.cleanup()
+            tmpdir.cleanup() # Delete temporary directory to free space
 
-        return PIL.Image.open("%s/out0001.png" % tmp)
+        # Flip the output image as inputs seem to be flipped. Return the image.
+        return outimg.transpose(PIL.Image.FLIP_LEFT_RIGHT)
 
     except:
         os.chdir(pre)
@@ -260,21 +274,25 @@ def krpano_export(schema):
 
     return output
 
-def krpano_process(url):
+def krpano_export_simple(url):
     '''
-    Takes the URL of any image in a krpano panorama and returns a list of
-    lists of lists containing all images fit for passing into stitch().
+    Exports krpano panoramas which only consist of six complete tiles. Takes
+    the URL of one of these images and returns a list of PIL.Image objects
 
-    :param url: URL of an image contained in a krpano panorama
-    :return: list of lists of lists of PIL.Image() objects for krpano_stitch()
+    :param url: URL of one of the images
+    :return: list of PIL.Image objects
     '''
 
-    schema = krpano_normalize(url)
+    output = []
 
-    if not schema:
-        raise ValueError("%s does not seem to be a valid krpano URL." % url)
+    for i in "frblud":
+        cur = url[:-5] + i + url[-4:]
+        res = urllib.request.urlopen(cur)
+        assert res.getcode() == 200
+        fo = io.BytesIO(res.read())
+        output += [PIL.Image.open(fo)]
 
-    return krpano_export(schema)
+    return output
 
 def krpano_stitch(tiles):
     '''
@@ -293,6 +311,31 @@ def krpano_stitch(tiles):
 
     return output
 
+def krpano_make_tiles(url):
+    '''
+    Determines the type of processing needed to build the six tiles, then
+    creates and returns them.
+
+    :param urL: URL of any image in a krpano panorama
+    :return: list of stitched PIL.Image objects (back, right, front, left, top,
+             bottom)
+    '''
+
+    parts = url.split("/")
+
+    try:
+        if "pano_" in parts[-1]:
+           return krpano_export_simple(url)
+        else:
+           schema = krpano_normalize(url)
+           images = krpano_export(schema)
+           return krpano_stitch(images)
+
+    except:
+        raise
+        raise ValueError("%s does not seem to be a valid krpano URL." % url)
+
+
 def krpano_to_equirectangular(url, blender=True):
     '''
     Takes the URL of any image in a krpano panorama and returns a finished
@@ -302,11 +345,12 @@ def krpano_to_equirectangular(url, blender=True):
     :return: PIL.Image object containing the final image
     '''
 
-    images = krpano_process(url)
-    stitched = krpano_stitch(images)
+    stitched = krpano_make_tiles(url)
     function = tiles_to_equirectangular_blender if blender \
             else tiles_to_equirectangular
     return function(*stitched)
+
+process_url = krpano_to_equirectangular
 
 def stitch(images):
     '''
