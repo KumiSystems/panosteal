@@ -1,5 +1,5 @@
 import cgi
-from connections import Request, Response
+from server.connections import Request, Response
 import mimetypes
 import handler
 import uuid
