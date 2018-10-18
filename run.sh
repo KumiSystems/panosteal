@@ -1,4 +1,5 @@
 #!/bin/bash
 
-gunicorn -c gunicorn.cfg daemon
+mkdir /tmp/panosteal/ -p
+gunicorn -c gunicorn.cfg server.daemon
 
