@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="theme.css" type="text/css">
+</head>
+
+<body>
+  <div class="py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h1 class="">Panorama Image Export</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <form class="" id="theform">
+            <div class="form-group"> <label>URL</label> <input type="text" class="form-control" placeholder="https://example.com/0/0/0_0.jpg" name="url" required="required"> <small class="form-text text-muted">URL of an image contained in a krpano panorama or of a website containing a krpano panorama</small> </div>
+            <div class="form-group"> <label>Title</label> <input type="" class="form-control" placeholder="1234 - Shiny Place" name="title"> </div>
+            <div class="form-group"> <label>Transposition<br></label><select class="custom-control custom-select" name="transpose">
+                <option value="1" selected="True">Default: Flip left-right (mirror)</option>
+                <option value="0">No transposition</option>
+              </select> </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+<script>
+
+function lockform() {
+	$("#theform :input").prop("disabled", true);
+}
+
+function unlockform() {
+	$("#theform :input").prop("disabled", false);
+}
+
+$('#theform').submit(function(event){
+    event.preventDefault();
+    if(this.checkValidity()) { 
+	    $.ajax({
+		    type: "POST",
+		    url: "/addjob",
+		    data: $('#theform').serialize(),
+         	    success: function(msg){
+			    lockform();
+			    interval = setInterval(checkServerForFile,1000,msg);
+			    function checkServerForFile(jobid) {
+				    $.ajax({
+					    type: "GET",
+                			    cache: false,
+                			    url: "/getjob/" + jobid,
+                			    statusCode: {
+						    404: function() {
+							    clearInterval(interval);
+							    unlockform();
+                			            },
+				                    200: function() {
+				                            clearInterval(interval);
+							    unlockform();
+							    window.location.href = "/getjob/" + jobid
+		                        	    },
+						    500: function() {
+						            clearInterval(interval);
+							    unlockform();
+						    }
+			                    }
+			            });
+			        }
+
+         		}
+       		});}
+});
+
+</script>
+
+</body>
+
+</html>
