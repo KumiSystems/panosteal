@@ -35,7 +35,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    handler = parse_url(args.url)
-    image = handler(args.url, args.rotation or [0,0,0], args.resolution or [3840, 1920])
+    try:
+        handler = parse_url(args.url)
+        image = handler(args.url, args.rotation or [0,0,0], args.resolution or [3840, 1920])
 
-    image.save(args.output + "/" + args.title + ".png")
+        image.save(args.output + "/" + args.title + ".png")
+    except Exception as e:
+        with open(args.output + "/" + args.title + ".err", "w") as errorfile:
+            errorfile.write("")

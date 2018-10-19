@@ -6,6 +6,8 @@ import uuid
 import configparser
 import os
 import glob
+import hashlib
+import time
 
 HTTP200 = "200 OK"
 HTTP202 = "202 Accepted"
@@ -90,12 +92,22 @@ def getjob(req):
     jobid = req.path[-1]
     content_disposition = None
 
-    if glob.glob("/tmp/panosteal/%s---*" % jobid): 
-        content = open(glob.glob("/tmp/panosteal/%s---*" % jobid)[0], "rb").read()
+    found = glob.glob("/tmp/panosteal/%s---*" % jobid)
+
+    if found:
+        md5 = "Not happening."
+        while True:
+            content = open(found[0], "rb").read()
+            newmd5 = hashlib.md5(content).hexdigest()
+            if newmd5 == md5:
+                break
+            md5 = newmd5
+            time.sleep(0.5)
+
         code = HTTP200
         ctype = mimetypes.guess_type("any.png")[0]
-        content_disposition = glob.glob("/tmp/panosteal/%s---*" % jobid)[0].split("---")[-1]
-    elif os.path.isfile("/tmp/panosteal/%s.err" % jobid):
+        content_disposition = found[0].split("---")[-1]
+    elif glob.glob("/tmp/panosteal/%s*err" % jobid):
         content = "<h1>500 Internal Server Error</h1>".encode()
         code = HTTP500
         ctype = HTML
@@ -106,7 +118,7 @@ def getjob(req):
     else:
         content = "".encode()
         code = HTTP202
-        ctype = HTML
+        ctype = TEXT
 
     res = Response(code, ctype, content)
 

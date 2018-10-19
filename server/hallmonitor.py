@@ -27,7 +27,6 @@ class createHandler(pyinotify.ProcessEvent):
             try:
                 handleIncoming(event.pathname)
             except Exception as e:
-                raise
                 with open(event.pathname + ".err", "w") as errorfile:
                     errorfile.write("")
                 print(e)
