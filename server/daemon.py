@@ -40,33 +40,34 @@ def static(req):
 def addjob(req):
     jobid = str(uuid.uuid4())
     config = configparser.ConfigParser()
+
     try:
-        title = req.args["title"][0].replace(" ", "_") or "output"
+        title = re.sub(r"[^a-zA-Z0-9_\-]", "_", req.args["title"][0]) or output
     except:
         title = "output"
 
     try:
-        rx = req.args["rx"][0]
+        rx = int(req.args["rx"][0]) or 0
     except:
         rx = 0
 
     try:
-        ry = req.args["ry"][0]
+        ry = int(req.args["ry"][0]) or 0
     except:
         ry = 0
 
     try:
-        rz = req.args["rz"][0]
+        rz = int(req.args["rz"][0]) or 0
     except:
         rz = 0
 
     try:
-        width = req.args["width"][0]
+        width = int(req.args["width"][0]) or 3840
     except:
         width = 3840
 
     try:
-        height = req.args["height"][0]
+        height = int(req.args["height"][0]) or 1920
     except:
         height = 1920
 
