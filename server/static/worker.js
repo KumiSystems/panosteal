@@ -26,7 +26,7 @@ function deletecard(jobid) {
 function addcard(jobid) {
         var text = '<div class="col-sm-3" id="' + jobid + '"> <div class="card"> <img class="card-img-top img-fluid" src="/spinner.gif" alt="Creating Image"> </div> </div>';
         $('#cards').append(text);
-	$('#' + jobid).show();
+	$('html,body').animate({scrollTop: $('#' + jobid).offset().top});
 }
 
 function failcard(jobid) {
