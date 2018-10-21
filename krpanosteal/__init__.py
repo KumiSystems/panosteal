@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 import pathlib
 import os
-from stitching import tiles_to_equirectangular_blender, stitch
+from stitching import tiles_to_equirectangular_blender, multistitch
 
 def krpano_normalize(url):
     '''
@@ -59,7 +59,7 @@ def krpano_export(schema):
     lists of lists containing all images fit for passing into stitch().
 
     :param schema: normalized URL format output by krpano_normalize()
-    :return: list of lists of lists of PIL.Image() objects for krpano_stitch()
+    :return: list of lists of lists of PIL.Image() objects for multistitch()
     '''
 
     maxzoom = krpano_getmaxzoom(schema)
@@ -114,23 +114,6 @@ def krpano_export_simple(url):
 
     return output
 
-def krpano_stitch(tiles):
-    '''
-    Takes a list of lists of lists containing PIL Image objects and stitches
-    them into one. Each box tile (first-order lists), line (second-order) and
-    column (third-order) must be equal in height and width.
-
-    :param faces: list of lists of lists containing PIL.Image objects
-    :return: list of stitched PIL.Image objects
-    '''
-
-    output = []
-
-    for tile in tiles:
-        output.append(stitch(tile))
-
-    return output
-
 def krpano_make_tiles(url):
     '''
     Determines the type of processing needed to build the six tiles, then
@@ -149,7 +132,7 @@ def krpano_make_tiles(url):
         else:
            schema = krpano_normalize(url)
            images = krpano_export(schema)
-           return krpano_stitch(images)
+           return multistitch(images)
 
     except:
         raise

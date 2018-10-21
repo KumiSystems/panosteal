@@ -46,6 +46,7 @@ def tiles_to_equirectangular_blender(back, right, front, left, top, bottom,
         pathlib.Path(tmp).mkdir(parents=True, exist_ok=True)
     except:
         print("Failed to create temporary directory.")
+        print(tmp)
         raise
 
     '''If no resolution is passed, assume the original resolution for output.'''
@@ -183,6 +184,23 @@ def tiles_to_equirectangular(back, right, front, left, top, bottom):
 
     output = PIL.Image.new("RGB", (t_width, t_height))
     output.putdata(raw)
+
+    return output
+
+def multistitch(tiles):
+    '''
+    Takes a list of lists of lists containing PIL Image objects and stitches
+    them into one. Each box tile (first-order lists), line (second-order) and
+    column (third-order) must be equal in height and width.
+
+    :param faces: list of lists of lists containing PIL.Image objects
+    :return: list of stitched PIL.Image objects
+    '''
+
+    output = []
+
+    for tile in tiles:
+        output.append(stitch(tile))
 
     return output
 
