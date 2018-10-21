@@ -94,7 +94,7 @@ def getjob(req):
     jobid = req.path[-1]
     content_disposition = None
 
-    found = glob.glob("/tmp/panosteal/%s---.png*" % jobid)
+    found = glob.glob("/tmp/panosteal/%s---*.png" % jobid)
 
     if found:
         md5 = "Not happening."
