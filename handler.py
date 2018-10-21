@@ -6,7 +6,8 @@ import argparse
 
 regs = {
         "\d/\d/\d_\d\.jpg": "krpanosteal",
-        "pano\_[frblud].jpg": "krpanosteal"
+        "pano\_[frblud].jpg": "krpanosteal",
+        "my.matterport.com/show/": "matterportsteal"
        }
 
 

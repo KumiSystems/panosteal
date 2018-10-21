@@ -39,7 +39,7 @@ def static(req):
 
 def addjob(req):
     jobid = str(uuid.uuid4())
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(strict=False, interpolation=None)
 
     try:
         title = re.sub(r"[^a-zA-Z0-9_\-]", "_", req.args["title"][0]) or output

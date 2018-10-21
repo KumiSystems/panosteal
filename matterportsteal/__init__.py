@@ -1,65 +1,21 @@
 import sys
 import os
-import argparse
 from urllib import request
 from urllib import parse
 from bs4 import BeautifulSoup
 import json
 import subprocess
 import math
+import io
+import PIL.Image
+from stitching import multistitch, tiles_to_equirectangular_blender
 
-def pars_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--url",
-        "-u",
-        type=str,
-        help="Download URL")
-
-    parser.add_argument(
-        "--dir",
-        "-d",
-        type=str,
-        default = None,
-        help="Save directory if none is specified title will be used")
-
-    parser.add_argument(
-        "--rot",
-        "-r",
-        type=str,
-        default = 0,
-        help = "Panorama rotation in degree")
-
-    parser.add_argument(
-        "--disable-download",
-        "-dd",
-        action = "store_true",
-        help = "Disables Download")
-
-    args = parser.parse_args()
-    args = vars(args)
-
-    if not args["url"]:
-        print("+ + + Please provide URL + + +")
-        parser.print_help()
-        sys.exit(0)
-
-    return args
-
-def get_url_data(url, directory):
+def get_url_data(url):
     # Load Data from URL
     soup_from_url = BeautifulSoup(request.urlopen(url).read(), "html.parser")
     pano_data = json.loads(soup_from_url.script.contents[0][33:-1])
 
-    print("Downloading: " + soup_from_url.title.string)
-
-    # Create Directory if none is specified
-    if directory is None:
-        directory = soup_from_url.title.string
-        directory = directory.replace(" - Matterport 3D Showcase", "")
-    dl_url = create_dl_url(pano_data)
-
-    return dl_url, directory
+    return create_dl_url(pano_data)
 
 def create_dl_url(pano_data):
     # URL Download Creation
@@ -70,38 +26,43 @@ def create_dl_url(pano_data):
     dl_url = template_dl_url.replace("{{filename}}", custom_url_part)
     return dl_url
 
-def dl_tiles(dl_url, directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+def dl_tiles(dl_url):
+    output = []
 
-    picture_count = 0
     for i in range(0,6):
+        i_array = []
+
         for j in range(0,4):
+            j_array = []
+
             for k in range(0,4):
                 file_number = str(i) + "_" + str(k) + "_" + str(j)
                 temp_dl_url = dl_url.replace("$i_$j_$k", file_number)
-                request.urlretrieve(temp_dl_url, directory + \
-                                    "/" + "part-" + str(i) + "-1-" + \
-                                    str(j) + "_" + str(k) + ".jpg")
-                picture_count += 1
-                print("Downloading Picture: " + str(picture_count) + "/96" + "\r", sep=' ', end='', flush=True)
-    print("Downloading Picture: " + str(picture_count) + "/96")
+                res = request.urlopen(temp_dl_url)
+                assert res.getcode() == 200
+                fo = io.BytesIO(res.read())
+                img = PIL.Image.open(fo)
+                j_array.append(img)
 
-def create_cube(directory, rotation):
-    print("Creating cube")
-    rc = subprocess.check_call(["./matterport_dl.sh",
-                                str(directory),
-                                str(int(math.degrees(rotation)))])
+            i_array.append(j_array)
 
+        output.append(i_array)
 
-def main():
-    args = pars_args()
-    directory = args["dir"]
-    rotation = math.radians(-float(args["rot"]))
-    dl_url, directory = get_url_data(args["url"], directory)
-    if not args["disable_download"]:
-        dl_tiles(dl_url, directory)
-    create_cube(directory, rotation)
+    return output
 
-if __name__ == "__main__":
-    main()
+def matterport_make_tiles(url):
+    dl_url = get_url_data(url)
+    images = dl_tiles(dl_url)
+    return multistitch(images)
+
+def matterport_to_equirectangular(url, rotation=[0,0,0], resolution=[3840,1920]):
+    stitched = matterport_make_tiles(url)
+    function = tiles_to_equirectangular_blender
+
+    ordered = stitched[1:5] + [stitched[0], stitched[5]]
+
+    rx, ry, rz = rotation
+    width, height = resolution
+    return function(*ordered, rx=rx, ry=ry, rz=rz, width=width, height=height)
+
+process_url = matterport_to_equirectangular

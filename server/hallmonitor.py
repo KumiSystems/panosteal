@@ -13,7 +13,7 @@ processes = {}
 def handleIncoming(filename):
     print(filename)
     time.sleep(1)
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(strict=False, interpolation=None)
     config.read(filename)
     p = subprocess.Popen(["./handler.py", config["Job"]["url"], "--title",
             filename.split("/")[-1] + "---" + config["Job"]["title"], 
