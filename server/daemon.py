@@ -8,6 +8,7 @@ import os
 import glob
 import hashlib
 import time
+import re
 
 HTTP200 = "200 OK"
 HTTP202 = "202 Accepted"
@@ -43,7 +44,7 @@ def addjob(req):
 
     try:
         title = re.sub(r"[^a-zA-Z0-9_\-]", "_", req.args["title"][0]) or "output"
-    except:
+    except Exception as e:
         title = "output"
 
     try:
