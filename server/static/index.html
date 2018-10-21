@@ -25,11 +25,15 @@
           <form class="" id="theform">
             <div class="form-group"> <label>URL</label> <input type="text" class="form-control" placeholder="https://example.com/0/0/0_0.jpg" name="url" required="required"> <small class="form-text text-muted">URL of an image contained in a krpano panorama or of a website containing a krpano panorama</small> </div>
             <div class="form-group"> <label>Title</label> <input type="" class="form-control" placeholder="1234 - Shiny Place" name="title"> </div>
-            <div class="form-group"> <label>Transposition<br></label><select class="custom-control custom-select" name="transpose">
-                <option value="1" selected="True">Default: Flip left-right (mirror)</option>
-                <option value="0">No transposition</option>
-              </select> </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+	    <div class="form-group"> <label style="display: block;">Resolution</label> <input type="" class="form-control" placeholder="3840" name="width" style="width: 100px; display: inline;"> x <input type="" class="form-control" placeholder="1920" name="width" style="width: 100px; display: inline;"> </div>
+	    <div id="options">
+		    <div class="form-group"> <label style="display: block;">Rotation on X/Y/Z axes</label> <input type="" class="form-control" placeholder="0" name="rx" style="width: 100px; display: inline;"> / <input type="" class="form-control" placeholder="0" name="ry" style="width: 100px; display: inline;"> / <input type="" class="form-control" placeholder="0" name="rz" style="width: 100px; display: inline;"> </div>
+        	    <div class="form-group"> <label>Transposition<br></label><select class="custom-control custom-select" name="transpose">
+                	<option value="1" selected="True">Default: Flip left-right (mirror)</option>
+                	<option value="0">No transposition</option>
+              	</select> </div>
+	      </div>
+	      <button type="submit" class="btn btn-success">Submit</button> <button type="reset" class="btn btn-danger">Reset</button> <button class="btn btn-info" onclick="toggleOptions()">More options</button>
           </form>
         </div>
       </div>

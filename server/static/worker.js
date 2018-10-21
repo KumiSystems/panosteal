@@ -1,4 +1,10 @@
+$("#options").hide();
+
 $body = $("body");
+
+function toggleOptions() {
+	$("#options").toggle();
+}
 
 function lockform() {
         $("#theform :input").prop("disabled", true);
@@ -37,7 +43,7 @@ $('#theform').submit(function(event){
                                                     },
                                                     500: function() {
                                                             clearInterval(interval);
-                                                            window.alert("Failed to process request.")
+                                                            window.alert("Failed to process request. The URL may be incorrect or unsupported.")
                                                             unlockform();
                                                     }
                                             }

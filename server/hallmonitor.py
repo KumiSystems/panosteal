@@ -11,6 +11,7 @@ import glob
 processes = {}
 
 def handleIncoming(filename):
+    print(filename)
     time.sleep(1)
     config = configparser.ConfigParser()
     config.read(filename)

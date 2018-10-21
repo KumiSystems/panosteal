@@ -20,6 +20,7 @@ HTML = "text/html"
 JSON = "application/json"
 XML = "text/xml"
 TEXT = "text/plain"
+PNG = "image/png"
 
 def static(req):
     try:
@@ -92,7 +93,7 @@ def getjob(req):
     jobid = req.path[-1]
     content_disposition = None
 
-    found = glob.glob("/tmp/panosteal/%s---*" % jobid)
+    found = glob.glob("/tmp/panosteal/%s---.png*" % jobid)
 
     if found:
         md5 = "Not happening."
@@ -105,12 +106,14 @@ def getjob(req):
             time.sleep(0.5)
 
         code = HTTP200
-        ctype = mimetypes.guess_type("any.png")[0]
+        ctype = PNG
         content_disposition = found[0].split("---")[-1]
+
     elif glob.glob("/tmp/panosteal/%s*err" % jobid):
         content = "<h1>500 Internal Server Error</h1>".encode()
         code = HTTP500
         ctype = HTML
+
     elif not os.path.isfile("/tmp/panosteal/%s" % jobid):
         content = "<h1>404 File Not Found</h1>".encode()
         code = HTTP404
