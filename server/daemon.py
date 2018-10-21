@@ -42,7 +42,7 @@ def addjob(req):
     config = configparser.ConfigParser(strict=False, interpolation=None)
 
     try:
-        title = re.sub(r"[^a-zA-Z0-9_\-]", "_", req.args["title"][0]) or output
+        title = re.sub(r"[^a-zA-Z0-9_\-]", "_", req.args["title"][0]) or "output"
     except:
         title = "output"
 
