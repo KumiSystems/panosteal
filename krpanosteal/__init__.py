@@ -7,18 +7,6 @@ import tempfile
 import pathlib
 import os
 from stitching import tiles_to_equirectangular_blender, multistitch
-import robobrowser
-
-def krpano_detect(url):
-    '''
-    Takes any URL and tries to detect a krpano panorama embedded in the site.
-
-    :param url: URL of a site containing a krpano panorama
-    :return: URL of an image contained in krpano panorama if found, else False
-    '''
-
-    juha = bs4.BeautifulSoup(request.urlopen(url).read(), "html.parser")
-
 
 def krpano_normalize(url):
     '''
