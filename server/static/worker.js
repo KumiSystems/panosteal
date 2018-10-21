@@ -42,7 +42,7 @@ $('#theform').submit(function(event){
 								200: function() {
 									clearInterval(interval);
 									unlockform();
-									window.location.href = "/getjob/" + jobid
+									window.location.href = "/getjob/" + jobid;
 								},
 								500: function() {
 									clearInterval(interval);
