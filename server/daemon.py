@@ -22,6 +22,8 @@ JSON = "application/json"
 XML = "text/xml"
 TEXT = "text/plain"
 PNG = "image/png"
+MKV = "video/mkv"
+JPG = "image/jpeg"
 
 def static(req):
     try:
@@ -92,15 +94,15 @@ def addjob(req):
     return Response(status, ctype, content)
 
 def getjob(req):
-    jobid = req.path[-1]
+    jobid = req.path[-1].rstrip("-thumb").rstrip("-info")
     content_disposition = None
 
-    found = glob.glob("/tmp/panosteal/%s---*.png" % jobid)
+    found = (glob.glob("/tmp/panosteal/%s---*.png" % jobid) + glob.glob("/tmp/panosteal/%s---*.mkv" % jobid)) if not req.path[-1].endswith("thumb") else glob.glob("/tmp/panosteal/%s---*.jpg" % jobid)
 
     if found:
         md5 = "Not happening."
         while True:
-            content = open(found[0], "rb").read()
+            content = open(found[0], "rb").read() if not req.path[-1].endswith("info") else b""
             newmd5 = hashlib.md5(content).hexdigest()
             if newmd5 == md5:
                 break
@@ -108,8 +110,8 @@ def getjob(req):
             time.sleep(0.5)
 
         code = HTTP200
-        ctype = PNG
-        content_disposition = found[0].split("---")[-1]
+        ctype = PNG if found[0].endswith(".png") else JPG if found[0].endswith(".jpg") else MKV
+        content_disposition = found[0].split("---")[-1] if not req.path[-1].endswith("info") else None
 
     elif glob.glob("/tmp/panosteal/%s*err" % jobid):
         content = "<h1>500 Internal Server Error</h1>".encode()

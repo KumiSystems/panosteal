@@ -37,11 +37,23 @@ function failcard(jobid, title) {
 }
 
 
-function finishcard(jobid, title) {
+function finishcard(jobid, title, video) {
 	deletecard(jobid);
-
-	var text = '<div class="col-sm-3" id="' + jobid + '"> <div class="card"> <img class="card-img-top img-fluid" src="/getjob/' + jobid + '" alt="Final Image"><div style="text-align: center; font-weight: bold;" class="card-block">' + title + '</div> <div style="text-align: center; color: white;" class="card-block"> <a href="/getjob/' + jobid + '" class="btn btn-primary">Download</a> <a onclick="deletecard(\'' + jobid + '\');" class="btn btn-danger">Hide</a></div> </div> </div>';
+	if (!video) {
+		var text = '<div class="col-sm-3" id="' + jobid + '"> <div class="card"> <img class="card-img-top img-fluid" src="/getjob/' + jobid + '" alt="Final Image"><div style="text-align: center; font-weight: bold;" class="card-block">' + title + '</div> <div style="text-align: center; color: white;" class="card-block"> <a href="/getjob/' + jobid + '" class="btn btn-primary">Download</a> <a onclick="deletecard(\'' + jobid + '\');" class="btn btn-danger">Hide</a></div> </div> </div>';
+	} else {
+		var text = '<div class="col-sm-3" id="' + jobid + '"> <div class="card"> <img class="card-img-top img-fluid" id="' + jobid + '-thumb" src="/getjob/' + jobid + '-thumb" alt="Final Video"><div style="text-align: center; font-weight: bold;" class="card-block">' + title + '</div> <div style="text-align: center; color: white;" class="card-block"> <a href="/getjob/' + jobid + '" class="btn btn-primary">Download</a> <a onclick="deletecard(\'' + jobid + '\');" class="btn btn-danger">Hide</a></div> </div> </div>';
+	};
 	$('#cards').append(text);
+
+	var counter = 0;
+	var interval = setInterval(function() {
+		var image = document.getElementById(jobid + '-thumb');
+		image.src = "/getjob/" + jobid + "-thumb?rand=" + Math.random();
+		if (++counter === 10) {
+			window.clearInterval(interval);
+		}
+	}, 2000);
 }
 
 $('#theform').submit(function(event){
@@ -64,16 +76,16 @@ $('#theform').submit(function(event){
 						$.ajax({
 							type: "GET",
 							cache: false,
-							url: "/getjob/" + jobid,
+							url: "/getjob/" + jobid + "-info",
 							statusCode: {
 								404: function() {
 									clearInterval(interval);
 									failcard(jobid, title);
 									return;
 								},
-								200: function() {
+								200: function(data, tstatus, xhr) {
 									clearInterval(interval);
-									finishcard(jobid, title);
+									finishcard(jobid, title, (xhr.getResponseHeader('content-type') == "image/png") ? false : true);
 									return;
 								},
 								500: function() {
