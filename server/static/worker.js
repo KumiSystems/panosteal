@@ -22,7 +22,6 @@ function deletecard(jobid) {
         };
 }
 
-
 function addcard(jobid, title) {
         var text = '<div class="col-sm-3" id="' + jobid + '"> <div class="card"> <img class="card-img-top img-fluid" src="/spinner.gif" alt="Creating Image"><div style="text-align: center; font-weight: bold;" class="card-block">' + title + '</div> </div> </div>';
         $('#cards').append(text);
@@ -30,21 +29,13 @@ function addcard(jobid, title) {
 }
 
 function failcard(jobid, title) {
-        deletecard(jobid, title);
-
-        var text = '<div class="col-sm-3" id="' + jobid + '"> <div class="card"> <div style="text-align: center; color: red; font-weight: bold;" class="card-block">' + title + ': Export failed.</div><div style="text-align: center;" class="card-block"> <a style="color: white;" onclick="deletecard(\'' + jobid + '\');" class="btn btn-danger">Hide</a></div> </div> </div>';
-        $('#cards').append(text);
+        var text = '<div class="card"> <div style="text-align: center; color: red; font-weight: bold;" class="card-block">' + title + ': Export failed.</div><div style="text-align: center;" class="card-block"> <a style="color: white;" onclick="deletecard(\'' + jobid + '\');" class="btn btn-danger">Hide</a></div> </div>';
+        $("#" + jobid).html(text);
 }
 
-
 function finishcard(jobid, title, video) {
-	deletecard(jobid);
-	if (!video) {
-		var text = '<div class="col-sm-3" id="' + jobid + '"> <div class="card"> <img class="card-img-top img-fluid" src="/getjob/' + jobid + '" alt="Final Image"><div style="text-align: center; font-weight: bold;" class="card-block">' + title + '</div> <div style="text-align: center; color: white;" class="card-block"> <a href="/getjob/' + jobid + '" class="btn btn-primary">Download</a> <a onclick="deletecard(\'' + jobid + '\');" class="btn btn-danger">Hide</a></div> </div> </div>';
-	} else {
-		var text = '<div class="col-sm-3" id="' + jobid + '"> <div class="card"> <img class="card-img-top img-fluid" id="' + jobid + '-thumb" src="/getjob/' + jobid + '-thumb" alt="Final Video"><div style="text-align: center; font-weight: bold;" class="card-block">' + title + '</div> <div style="text-align: center; color: white;" class="card-block"> <a href="/getjob/' + jobid + '" class="btn btn-primary">Download</a> <a onclick="deletecard(\'' + jobid + '\');" class="btn btn-danger">Hide</a></div> </div> </div>';
-	};
-	$('#cards').append(text);
+	var text = '<div class="card"> <img ' + (video ? 'id="' + jobid + '-thumb"' : "")+ ' class="card-img-top img-fluid" src="/getjob/' + jobid + (video ? "-thumb" : "") + '" alt="Final ' + (video ? "Video" : "Image") + '"><div style="text-align: center; font-weight: bold;" class="card-block">' + title + '</div> <div style="text-align: center; color: white;" class="card-block"> <a href="/getjob/' + jobid + '" class="btn btn-primary">Download</a> <a onclick="deletecard(\'' + jobid + '\');" class="btn btn-danger">Hide</a></div> </div>';
+	$("#" + jobid).html(text);
 
 	var counter = 0;
 	var interval = setInterval(function() {
