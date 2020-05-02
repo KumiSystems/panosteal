@@ -14,17 +14,38 @@ from stitching import tiles_to_equirectangular_blender, multistitch
 
 def youtube_get_video(url):
         vid = uuid.uuid4().hex
-        process = subprocess.Popen(
-            ['youtube-dl',
-                '--user-agent', '""',
-                '-o', vid,
-                url,
-                ], cwd="/tmp/panosteal/youtube/"
-            )
+        with open("/tmp/" + vid, "w") as logfile:
+            process = subprocess.Popen(
+                ['youtube-dl',
+                    '--user-agent', '""',
+                    '-o', vid,
+                    "--merge-output-format", "mkv",
+                    url,
+                    ], 
+                cwd="/tmp/panosteal/youtube/",
+                stdout=logfile,
+                stderr=logfile
+                )
 
-        process.wait()
+            process.wait()
 
-        data = open('/tmp/panosteal/youtube/%s.mkv' % vid, 'rb').read()
+        try:
+            data = open('/tmp/panosteal/youtube/%s.mkv' % vid, 'rb').read()
+        except:
+            try:
+                data = open('/tmp/panosteal/youtube/%s.mp4' % vid, 'rb').read()
+            except:
+                try:
+                    data = open('/tmp/panosteal/youtube/%s.webm' % vid, 'rb').read()
+                    process2 = subprocess.Popen(
+                            ['ffmpeg',
+                                '-i', '%s.webm' % vid,
+                                '-c:v', "copy",
+                                '%s.mkv' % vid],
+                            cwd="/tmp/panosteal/youtube/"
+                            )
+                except:
+                    raise
 
         for i in glob.glob("/tmp/panosteal/youtube/%s*" % vid):
             os.remove(i)

@@ -4,12 +4,14 @@ import re
 import importlib
 import argparse
 import subprocess
+import traceback
 
 regs = {
         "\d/\d/\d_\d\.jpg": "krpanosteal",
         "pano\_[frblud].jpg": "krpanosteal",
         "my.matterport.com/show/": "matterportsteal",
-        "youtube.com": "youtubesteal"
+        "youtube.com": "youtubesteal",
+        "l\d_[frblud]_\d\d_\d\d.jpg": "giraffesteal"
        }
 
 
@@ -52,6 +54,6 @@ if __name__ == "__main__":
                 args.output + "/" + args.title + ".thumb.jpg"])
         else:
             image.save(args.output + "/" + args.title + ".png")
-    except Exception as e:
+    except Exception:
         with open(args.output + "/" + args.title + ".err", "w") as errorfile:
-            errorfile.write(str(e))
+            errorfile.write(traceback.format_exc())
