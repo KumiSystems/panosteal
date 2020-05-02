@@ -7,7 +7,7 @@ import configparser
 import handler
 import time
 import glob
-import ftncl
+import fcntl
 import signal
 import errno
 
