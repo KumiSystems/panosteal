@@ -7,6 +7,11 @@ import configparser
 import handler
 import time
 import glob
+import ftncl
+import signal
+import errno
+
+from contextlib import contextmanager
 
 processes = {}
 
@@ -57,5 +62,33 @@ def run():
         finally:
             time.sleep(30)
 
+@contextmanager
+def timeout(seconds):
+    def timeout_handler(signum, frame):
+        pass
+
+    original_handler = signal.signal(signal.SIGALRM, timeout_handler)
+
+    try:
+        signal.alarm(seconds)
+        yield
+
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, original_handler)
+
+def create_lock():
+    with timeout(1):
+        fileobj = open('/tmp/panosteal/monitor.lock', 'w+')
+        try:
+            fcntl.flock(fileobj.fileno(), fcntl.LOCK_EX)
+        except IOError as e:
+            if e.errno != errno.EINTR:
+                raise e
+            exit("Already running - exiting")
+        return fileobj
+    exit("An error has occurred - exiting")
+
 if __name__ == "__main__":
+    create_lock()
     run()
