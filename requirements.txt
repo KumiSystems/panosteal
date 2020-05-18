@@ -1,3 +1,4 @@
 pyinotify
 pillow
 youtube-dl
+cube2sphere
