@@ -91,6 +91,8 @@ def tiles_to_equirectangular_blender(back, right, front, left, top, bottom,
         if not keep:
             tmpdir.cleanup() # Delete temporary directory to free space
 
+        return outimg
+
     except:
         os.chdir(pre)
         print("Something went wrong trying to convert to equirectangular.")
