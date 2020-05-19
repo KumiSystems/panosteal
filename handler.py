@@ -10,6 +10,7 @@ regs = {
         "\d/\d/\d_\d\.jpg": "krpanosteal",
         "pano\_[frblud].jpg": "krpanosteal",
         "my.matterport.com/show/": "matterportsteal",
+        "cdn-1.matterport.com": "matterportsimple",
         "youtube.com": "youtubesteal",
         "l\d_[frblud]_\d\d_\d\d.jpg": "giraffesteal"
        }
@@ -26,7 +27,7 @@ def parse_url(url):
             break
 
     if not selected:
-        raise ValueError("No handler known for this URL. Kaggi.")
+        raise ValueError("No matching handler found")
 
     return importlib.import_module(selected).process_url
 

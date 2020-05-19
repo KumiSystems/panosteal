@@ -91,9 +91,6 @@ def tiles_to_equirectangular_blender(back, right, front, left, top, bottom,
         if not keep:
             tmpdir.cleanup() # Delete temporary directory to free space
 
-        # Flip the output image as inputs seem to be flipped. Return the image.
-        return outimg.transpose(PIL.Image.FLIP_LEFT_RIGHT)
-
     except:
         os.chdir(pre)
         print("Something went wrong trying to convert to equirectangular.")
