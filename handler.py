@@ -7,12 +7,13 @@ import subprocess
 import traceback
 
 regs = {
-        "\d/\d/\d_\d\.jpg": "krpanosteal",
-        "pano\_[frblud].jpg": "krpanosteal",
-        "my.matterport.com/show/": "matterportsteal",
-        "cdn-1.matterport.com": "matterportsimple",
-        "youtube.com": "youtubesteal",
-        "l\d_[frblud]_\d\d_\d\d.jpg": "giraffesteal"
+        r"\d/\d/\d_\d\.jpg": "krpanosteal",
+        r"pano\_[frblud].jpg": "krpanosteal",
+        r"my.matterport.com/show/": "matterportsteal",
+        r"cdn-1.matterport.com": "matterportsimple",
+        r"youtube.com": "youtubesteal",
+        r"l\d_[frblud]_\d\d_\d\d.jpg": "giraffesteal",
+        r"=x\d-y\d-z\d": "googlesteal"
        }
 
 
