@@ -13,7 +13,8 @@ regs = {
         r"cdn-1.matterport.com": "matterportsimple",
         r"youtube.com": "youtubesteal",
         r"l\d_[frblud]_\d\d_\d\d.jpg": "giraffesteal",
-        r"=x\d-y\d-z\d": "googlesteal"
+        r"=x\d-y\d-z\d": "googlesteal",
+        r"[brflud]\/\d\/\d_\d\.jpg": "tdvsteal",
        }
 
 
