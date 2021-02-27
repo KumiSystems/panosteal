@@ -15,6 +15,9 @@ regs = {
         r"l\d_[frblud]_\d\d_\d\d.jpg": "giraffesteal",
         r"=x\d-y\d-z\d": "googlesteal",
         r"[brflud]\/\d\/\d_\d\.jpg": "tdvsteal",
+        "c\d_l\d_\d_\d.jpg": "pindorasteal",
+        "/[frblud]/l\d/\d/l\d_[frblud]_\d_\d.jpg": "eyerevolutionsteal",
+        "(pos|neg)[xyz]\.jpg": "xvrsteal",
        }
 
 
