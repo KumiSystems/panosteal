@@ -6,7 +6,12 @@ import subprocess
 import tempfile
 import pathlib
 import os
+
 from stitching import tiles_to_equirectangular_blender, multistitch
+
+from socket import timeout
+from ssl import SSLError
+from urllib.error import URLError, HTTPError
 
 def tdv_normalize(url):
     '''
@@ -42,16 +47,7 @@ def tdv_getmaxzoom(schema):
     :return: int value of largest available zoom level
     '''
 
-    l = 0
-
-    while True:
-        try:
-            url = schema % ("f", l+1, 0, 0)
-            with urllib.request.urlopen(url) as res:
-                assert res.getcode() == 200
-                l += 1
-        except:
-            return l
+    return 0
 
 def tdv_export(schema):
     '''
@@ -75,9 +71,18 @@ def tdv_export(schema):
 
             while True:
                 try:
-                    res = urllib.request.urlopen(schema % (tile, maxzoom, y, x))
-                    assert res.getcode() == 200
-                    fo = io.BytesIO(res.read())
+                    print("Getting %s" % (schema % (tile, maxzoom, y, x)))
+                    while True:
+                        try:
+                            res = urllib.request.urlopen(schema % (tile, maxzoom, y, x), timeout=10)
+                            assert res.getcode() == 200
+                            fo = io.BytesIO(res.read())
+                            break
+                        except (timeout, SSLError, URLError) as e:
+                            if isinstance(e, HTTPError):
+                                raise
+                            continue
+                    print("Done")
                     img = PIL.Image.open(fo)
                     r_array.append(img)
                     x += 1
