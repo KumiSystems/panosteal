@@ -1,4 +1,7 @@
-import cgi
+try:
+  from urllib.parse import parse_qs
+except:
+  from cgi import parse_qs
 
 class IllegalMethodException(BaseException):
  pass
@@ -13,9 +16,9 @@ class Request:
 
  def fromEnv(self, env):
   if env["REQUEST_METHOD"] == "POST":
-   self.args = cgi.parse_qs(env['wsgi.input'].readline().decode(), True)
+   self.args = parse_qs(env['wsgi.input'].readline().decode(), True)
   elif env["REQUEST_METHOD"] == "GET":
-   self.args = cgi.parse_qs(env['QUERY_STRING'], True)
+   self.args = parse_qs(env['QUERY_STRING'], True)
   else:
    raise IllegalMethodException()
 

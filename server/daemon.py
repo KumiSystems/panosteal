@@ -1,4 +1,3 @@
-import cgi
 from server.connections import Request, Response
 import mimetypes
 import handler
