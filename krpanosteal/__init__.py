@@ -6,6 +6,7 @@ import subprocess
 import tempfile
 import pathlib
 import os
+import re
 from stitching import tiles_to_equirectangular_blender, multistitch
 
 def krpano_normalize(url):
@@ -127,7 +128,7 @@ def krpano_make_tiles(url):
     parts = url.split("/")
 
     try:
-        if "pano_" in parts[-1]:
+        if re.search(r"\_[frblud].jpg", parts[-1]):
            return krpano_export_simple(url)
         else:
            schema = krpano_normalize(url)

@@ -8,7 +8,7 @@ import traceback
 
 regs = {
         r"\d/\d/\d_\d\.jpg": "krpanosteal",
-        r"pano\_[frblud].jpg": "krpanosteal",
+        r"\_[frblud].jpg": "krpanosteal",
         r"my.matterport.com/show/": "matterportsteal",
         r"cdn-1.matterport.com": "matterportsimple",
         r"youtube.com": "youtubesteal",
