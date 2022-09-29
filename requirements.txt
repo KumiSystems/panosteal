@@ -1,3 +1,4 @@
+wheel
 pyinotify
 pillow
 youtube-dl
