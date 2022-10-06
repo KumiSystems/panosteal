@@ -27,7 +27,7 @@ def krpano_normalize(url):
         assert "_" in parts[-1]
         parts[-1] = "%i_%i.jpg"
         parts[-2] = "%i"
-        parts[-3] = "%i"
+        parts[-3] = parts[-3].rstrip("0123456789") + "%i"
 
         return "/".join(parts)
 

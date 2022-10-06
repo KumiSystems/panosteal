@@ -7,7 +7,7 @@ import subprocess
 import traceback
 
 regs = {
-        r"\d/\d/\d_\d\.jpg": "krpanosteal",
+        r"\d+/\d+/\d+_\d+\.jpg": "krpanosteal",
         r"\_[frblud].jpg": "krpanosteal",
         r"my.matterport.com/show/": "matterportsteal",
         r"cdn-1.matterport.com": "matterportsimple",
@@ -43,11 +43,12 @@ if __name__ == "__main__":
     parser.add_argument("--rotation", nargs=3, type=int, help="rotation on x/y/z axes", metavar=("x","y","z"))
     parser.add_argument("--resolution", type=int, nargs=2, metavar=("w","h"))
     parser.add_argument("--output", default=".")
+    parser.add_argument("--module", help="name of module to use")
 
     args = parser.parse_args()
 
     try:
-        handler = parse_url(args.url)
+        handler = importlib.import_module(args.module).process_url if args.module else parse_url(args.url)
         image = handler(args.url, args.rotation or [0,0,0], args.resolution or [3840, 1920])
         if not hasattr(image, "im"):
             with open(args.output + "/" + args.title + ".mkv", "wb") as video:
