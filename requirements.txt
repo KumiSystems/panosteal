@@ -4,3 +4,4 @@ pillow
 youtube-dl
 cube2sphere
 bs4
+gunicorn
