@@ -11,6 +11,7 @@ regs = {
         r"\_[frblud].jpg": "krpanosteal",
         r"my.matterport.com/show/": "matterportsteal",
         r"[^_]*_face\d_\d_\d.jpg": "matterportsimple",
+        "\dk_face\d_\d_\d.jpg": "matterportsimple",
         r"youtube.com": "youtubesteal",
         r"l\d_[frblud]_\d\d_\d\d.jpg": "giraffesteal",
         r"=x\d-y\d-z\d": "googlesteal",
