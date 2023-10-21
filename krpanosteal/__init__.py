@@ -130,15 +130,14 @@ def krpano_make_tiles(url):
     try:
         if re.search(r"\_[frblud].jpg", parts[-1]):
            return krpano_export_simple(url)
-        elif re.search(r"\d.jpg", parts[-1]):
+        elif re.search(r"^\d.jpg", parts[-1]):
            return krpano_export_simple(url, "012345")
         else:
            schema = krpano_normalize(url)
            images = krpano_export(schema)
            return multistitch(images)
 
-    except:
-        raise
+    except Exception as e:
         raise ValueError("%s does not seem to be a valid krpano URL." % url)
 
 
