@@ -18,6 +18,7 @@ regs = {
         "c\d_l\d_\d_\d.jpg": "pindorasteal",
         "/[frblud]/l\d/\d/l\d_[frblud]_\d_\d.jpg": "eyerevolutionsteal",
         "(pos|neg)[xyz]\.jpg": "xvrsteal",
+        r"\d.jpg": "krpanosteal",
        }
 
 

@@ -95,7 +95,7 @@ def krpano_export(schema):
 
     return output
 
-def krpano_export_simple(url):
+def krpano_export_simple(url, tiles="frblud"):
     '''
     Exports krpano panoramas which only consist of six complete tiles. Takes
     the URL of one of these images and returns a list of PIL.Image objects
@@ -106,7 +106,7 @@ def krpano_export_simple(url):
 
     output = []
 
-    for i in "frblud":
+    for i in tiles:
         cur = url[:-5] + i + url[-4:]
         res = urllib.request.urlopen(cur)
         assert res.getcode() == 200
@@ -130,6 +130,8 @@ def krpano_make_tiles(url):
     try:
         if re.search(r"\_[frblud].jpg", parts[-1]):
            return krpano_export_simple(url)
+        elif re.search(r"\d.jpg", parts[-1]):
+           return krpano_export_simple(url, "012345")
         else:
            schema = krpano_normalize(url)
            images = krpano_export(schema)
